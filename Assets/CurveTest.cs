@@ -11,16 +11,18 @@ public class CurveTest : MonoBehaviour {
     public float step = 0.5f;
     
     private void OnDrawGizmos() {
-        if (anchors.Length >= 3) {
+        if (anchors is { Length: >= 3 }) {
             float3 pos = this.transform.position;
             NativeArray<float2> points;
             NativeArray<Anchor> nAnchors = new NativeArray<Anchor>(anchors, Allocator.Temp);
             if (isContour) {
-                var contour = new Contour(nAnchors, isClosed);
+                var contour = new Contour(nAnchors, isClosed, 20, Allocator.Temp);
                 points = contour.GetPoints(step, new float2(pos.x, pos.y), Allocator.Temp);
+                contour.Dispose();
             } else {
-                var curve = new Curve(nAnchors, isClosed);
+                var curve = new Curve(nAnchors, isClosed, 20, Allocator.Temp);
                 points = curve.GetPoints(step, new float2(pos.x, pos.y), Allocator.Temp);
+                curve.Dispose();
             }
 
             nAnchors.Dispose();
